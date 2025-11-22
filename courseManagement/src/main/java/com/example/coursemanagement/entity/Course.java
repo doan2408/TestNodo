@@ -4,10 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Where;
 
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "courses")
@@ -33,7 +32,7 @@ public class Course {
 
     @ColumnDefault("'1'")
     @Lob
-    @Column(name = "status")
+    @Column(name = "status",columnDefinition = "ENUM('1', '0') DEFAULT '1'")
     private String status;
 
     @ColumnDefault("current_timestamp()")
@@ -51,6 +50,11 @@ public class Course {
 
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<Lesson> lessons = new LinkedHashSet<>();
+
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @JoinColumn(name = "object_id")
+    @Where(clause = "object_type = 'course'")
+    private List<Image> images = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -122,6 +126,14 @@ public class Course {
 
     public void setLessons(Set<Lesson> lessons) {
         this.lessons = lessons;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 
     public Course(Long id, String name, String code, String description, String status, Date createdAt, Date updatedAt, Set<Enrollment> enrollments, Set<Lesson> lessons) {

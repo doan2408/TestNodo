@@ -23,7 +23,10 @@ public class LessonRequest {
     @Size(min = 3, max = 255, message = "{lesson.title.size}")
     private String title;
 
-    private List<MultipartFile> videos; // Nhiều video
+    private List<MultipartFile> videos;
 
-    private List<MultipartFile> thumbnails; // Nhiều thumbnail
+    private List<MultipartFile> thumbnails;
+
+    private List<Long> deleteVideoIds;
+    private List<Long> deleteThumbnailIds;
 }
