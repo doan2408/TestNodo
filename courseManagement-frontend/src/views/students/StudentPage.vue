@@ -13,7 +13,7 @@
         <div class="search-inputs">
           <el-input
             v-model="keyword"
-            placeholder="Tìm kiếm theo tên, email, sđt..."
+            :placeholder="$t('student.searchPlaceholder')"
             clearable
             class="custom-input search-input"
             @input="searchStudents"
@@ -25,13 +25,13 @@
 
           <el-select
             v-model="gender"
-            placeholder="Tất cả giới tính"
+            :placeholder="$t('common.none')"
             clearable
             class="custom-select gender-select"
             @change="searchStudents"
           >
-            <el-option label="Nam" value="1" />
-            <el-option label="Nữ" value="0" />
+            <el-option :label="$t('student.male')" value="1" />
+            <el-option :label="$t('student.female')" value="0" />
           </el-select>
         </div>
       </div>
@@ -40,7 +40,7 @@
       <div class="action-toolbar" v-if="!courseId">
         <el-button type="primary" @click="createStudent" class="action-button">
           <span class="button-icon">➕</span>
-          Tạo Sinh viên Mới
+          {{ $t('student.addNew') }}
         </el-button>
         <el-button
           type="success"
@@ -49,7 +49,7 @@
           class="action-button"
         >
           <span class="button-icon" v-if="!exporting">📥</span>
-          Xuất Excel
+          {{ $t('student.exportExcel') }}
         </el-button>
       </div>
 
@@ -57,7 +57,7 @@
       <div class="action-toolbar" v-else>
         <el-button @click="goBackToCourses" class="action-button">
           <span class="button-icon">⬅️</span>
-          Quay lại Khóa học
+          {{ $t('course.title') }}
         </el-button>
       </div>
 
@@ -104,6 +104,7 @@
 <script setup>
 import { ref, nextTick, onMounted, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 import StudentTable from "@/components/studentsComponent/StudentTable.vue";
 import StudentForm from "@/components/studentsComponent/StudentForm.vue";
 import { ElMessage } from "element-plus";
@@ -116,6 +117,8 @@ import {
 } from "@/api/StudentService";
 import { getStudentsByCourse } from "@/api/EnrollmentService";
 
+const { t } = useI18n();
+
 const route = useRoute();
 const router = useRouter();
 
@@ -127,20 +130,20 @@ const courseId = computed(() => {
 
 // Dynamic page title
 const pageTitle = computed(() => {
-  return courseId.value ? "Danh sách Sinh viên Khóa học" : "Quản lý Sinh viên";
+  return courseId.value ? t('student.title') + ' - ' + t('course.title') : t('student.title');
 });
 
 const pageSubtitle = computed(() => {
   return courseId.value
-    ? "Xem sinh viên đã đăng ký khóa học này"
-    : "Hệ thống quản lý hồ sơ và thông tin sinh viên";
+    ? t('student.subtitle')
+    : t('student.subtitle');
 });
 
 const dialogVisible = ref(false);
 const selectedStudent = ref(null);
 const isEdit = ref(false);
 const isRead = ref(false);
-const dialogTitle = ref("Tạo Sinh viên Mới");
+const dialogTitle = ref(t('student.addNew'));
 
 const formErrors = ref([]); // state để lưu lỗi hiển thị trong form
 
@@ -168,23 +171,21 @@ const studentListRef = ref(null);
 
 // Columns configuration
 const columns = ref([
-  { prop: "name", label: "Tên" },
-  { prop: "email", label: "Email" },
-  { prop: "phone", label: "Phone" },
-  { prop: "gender", label: "Giới tính", width: "100" },
-  { prop: "status", label: "Trạng thái", width: "120" },
+  { prop: "name", label: t('student.name') },
+  { prop: "email", label: t('student.email') },
+  { prop: "phone", label: t('student.phone') },
+  { prop: "gender", label: t('student.gender'), width: "100" },
+  { prop: "status", label: t('common.status') || "Status", width: "120" },
 ]);
 
 // Load students function - phân biệt theo courseId
 const loadStudents = async () => {
   try {
     if (courseId.value) {
-      // Load sinh viên theo khóa học
       const res = await getStudentsByCourse(courseId.value);
       students.value = res || [];
       totalElements.value = res?.length || 0;
     } else {
-      // Load tất cả sinh viên với filter
       const res = await getAllStudent({
         keyword: keywordToSearch.value || "",
         gender: genderToSearch.value || "",
@@ -200,11 +201,11 @@ const loadStudents = async () => {
     console.error(err);
     students.value = [];
     totalElements.value = 0;
-    ElMessage.error("Không thể tải danh sách sinh viên");
+    ElMessage.error(t('common.error'));
   }
 };
 
-// Delete function - chỉ cho phép khi không xem theo khóa học
+// Delete function
 const deleteStudentData = async (id) => {
   return await apiDeleteStudent(id);
 };
@@ -225,10 +226,10 @@ const handleExport = async () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
-    ElMessage.success("Đã tải file Excel.");
+    ElMessage.success(t('common.success'));
   } catch (err) {
     console.error(err);
-    ElMessage.error("Xuất Excel thất bại.");
+    ElMessage.error(t('common.error'));
   } finally {
     exporting.value = false;
   }
@@ -242,59 +243,53 @@ const searchStudents = () => {
     keywordToSearch.value = keyword.value;
     genderToSearch.value = gender.value;
 
-    await nextTick(); // đợi prop cập nhật xuống child
+    await nextTick();
     studentListRef.value?.loadStudents?.();
   }, 500);
 };
 
-// nhận event pageChange từ child pagination
 const onPageChange = (newPage) => {
   page.value = newPage;
   studentListRef.value?.loadStudents?.();
 };
 
-// Tạo sinh viên
 const createStudent = () => {
   formErrors.value = [];
   selectedStudent.value = null;
   isEdit.value = false;
-  dialogTitle.value = "Thêm Sinh viên Mới";
+  dialogTitle.value = t('student.addNew');
   dialogVisible.value = true;
 };
 
-// Sửa sinh viên
 const editStudent = (student) => {
   if (courseId.value) {
-    ElMessage.warning("Không thể sửa sinh viên trong chế độ xem khóa học");
+    ElMessage.warning(t('common.error'));
     return;
   }
-  formErrors.value = []; // reset lỗi
+  formErrors.value = [];
   selectedStudent.value = { ...student };
   isEdit.value = true;
-  dialogTitle.value = "Cập nhật Thông tin";
+  dialogTitle.value = t('student.update');
   dialogVisible.value = true;
 };
 
-// Xem chi tiết
 const viewStudentDetail = (student) => {
-  formErrors.value = []; // reset lỗi
+  formErrors.value = [];
   selectedStudent.value = { ...student };
   isEdit.value = false;
   isRead.value = true;
   nextTick(() => {
-    dialogTitle.value = "Hồ sơ Sinh viên";
+    dialogTitle.value = t('student.profile');
     dialogVisible.value = true;
   });
 };
 
-// Quay lại trang khóa học
 const goBackToCourses = () => {
   router.push("/courses");
 };
 
-// Lưu dữ liệu
 const saveStudent = async ({ student, avatarFile, deleteAvatarIds }) => {
-  formErrors.value = []; // reset lỗi
+  formErrors.value = [];
   try {
     const formData = new FormData();
     formData.append("name", student.name);
@@ -306,7 +301,6 @@ const saveStudent = async ({ student, avatarFile, deleteAvatarIds }) => {
       formData.append("avatar", avatarFile);
     }
 
-    // append deleteAvatarIds (từng phần tử nếu array, hoặc JSON string)
     if (deleteAvatarIds && deleteAvatarIds.length > 0) {
       deleteAvatarIds.forEach((id, index) => {
         formData.append(`deleteAvatarIds[${index}]`, id);
@@ -315,30 +309,29 @@ const saveStudent = async ({ student, avatarFile, deleteAvatarIds }) => {
 
     if (student.id) {
       await apiUpdateStudent(student.id, formData);
-      ElMessage.success("Cập nhật thành công!");
+      ElMessage.success(t('student.updateSuccess'));
     } else {
       await apiCreateStudent(formData);
-      ElMessage.success("Tạo sinh viên thành công!");
+      ElMessage.success(t('student.createSuccess'));
     }
 
     dialogVisible.value = false;
     studentListRef.value?.loadStudents?.();
   } catch (error) {
     console.error(error);
-    // Xử lý lỗi từ backend
     const errorMessages = error.response?.data?.message;
     if (errorMessages) {
       if (Array.isArray(errorMessages)) {
-        formErrors.value = errorMessages; // lưu errors để hiển thị trong form
+        formErrors.value = errorMessages;
         const errorText = errorMessages.join("\n");
         ElMessage.error(errorText);
       } else if (typeof errorMessages === "string") {
         ElMessage.error(errorMessages);
       } else {
-        ElMessage.error("Lưu thất bại!");
+        ElMessage.error(t('student.saveFailed'));
       }
     } else {
-      ElMessage.error("Lưu thất bại!");
+      ElMessage.error(t('student.saveFailed'));
     }
   }
 };
@@ -348,7 +341,6 @@ const closeDialog = () => {
   isRead.value = false;
 };
 
-// Load data khi component mount
 onMounted(() => {
   loadStudents();
 });

@@ -2,18 +2,12 @@
   <div>
     <!-- Toolbar -->
     <div
-      style="
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-      "
+      style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;"
     >
-      <el-button type="primary" @click="createLesson">Thêm Bài học</el-button>
+      <el-button type="primary" @click="createLesson">{{ t('lesson.addNew') }}</el-button>
       <el-input
         v-model="keyword"
-        placeholder="Tìm kiếm bài học"
+        :placeholder="t('lesson.searchPlaceholder')"
         style="width: 220px"
         @input="searchLessons"
         clearable
@@ -22,7 +16,7 @@
         v-if="props.courseId"
         style="color: #909399; font-size: 12px; margin-top: 4px; display: block"
       >
-        Khóa: {{ getCourseTitle(props.courseId) }}
+        {{ t('lesson.course') }}: {{ getCourseTitle(props.courseId) }}
       </span>
       <span></span>
     </div>
@@ -34,23 +28,18 @@
           {{ (props.page - 1) * props.size + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <!-- <el-table-column prop="id" label="ID" width="60" /> -->
-      <el-table-column label="Tiêu đề" prop="title" with="120" />
+      <el-table-column :label="t('lesson.lessonTitle')" prop="title" with="120" />
 
       <!-- Video preview -->
-      <el-table-column label="Video" width="180">
+      <el-table-column :label="t('lesson.video')" width="180">
         <template #default="{ row }">
           <div v-if="row.videos?.length > 0">
             <a
               :href="row.videos[0].url"
               target="_blank"
-              style="
-                color: #409eff;
-                text-decoration: underline;
-                font-size: 12px;
-              "
+              style="color: #409eff; text-decoration: underline; font-size: 12px;"
             >
-              {{ row.videos[0].fileName || "Xem video" }}
+              {{ row.videos[0].fileName || t('lesson.viewVideo') }}
             </a>
             <span
               v-if="row.videos.length > 1"
@@ -58,36 +47,30 @@
               >(+{{ row.videos.length - 1 }})</span
             >
           </div>
-          <span v-else style="color: #ccc">Không có</span>
+          <span v-else style="color: #ccc">{{ t('lesson.noVideo') }}</span>
         </template>
       </el-table-column>
 
       <!-- Thumbnail preview -->
-      <el-table-column label="Thumbnail" width="180">
+      <el-table-column :label="t('lesson.thumbnail')" width="180">
         <template #default="{ row }">
           <el-image
             v-if="row.thumbnails?.length > 0"
             :src="row.thumbnails[0].url"
-            style="
-              width: 80px;
-              height: 60px;
-              object-fit: cover;
-              border-radius: 4px;
-              cursor: pointer;
-            "
+            style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px; cursor: pointer;"
             :preview-src-list="row.thumbnails.map((t) => t.url)"
             :initial-index="0"
           />
-          <span v-else style="color: #ccc">Không có</span>
+          <span v-else style="color: #ccc">{{ t('lesson.noThumbnail') }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="Thao tác" width="180">
+      <el-table-column :label="t('common.action')" width="180">
         <template #default="{ row }">
-          <el-button size="small" @click="onEdit(row)">Sửa</el-button>
-          <el-button size="small" type="danger" @click="onDelete(row.id)"
-            >Xóa</el-button
-          >
+          <el-button size="small" @click="onEdit(row)">{{ t('common.edit') }}</el-button>
+          <el-button size="small" type="danger" @click="onDelete(row.id)">
+            {{ t('common.delete') }}
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -109,7 +92,11 @@
 <script setup>
 import { ref, watch } from "vue";
 import { ElMessage } from "element-plus";
+import { useI18n } from "vue-i18n"; // Import the useI18n function
 import { getAllLessons } from "@/api/LessonService";
+
+// Initialize i18n
+const { t } = useI18n();
 
 const lessons = ref([]);
 const keyword = ref("");
@@ -125,9 +112,10 @@ const props = defineProps({
 const getCourseTitle = (courseId) => {
   const course = props.courses.find((c) => c.id === courseId);
   return course
-    ? course.title || course.name || `Course ${courseId}`
-    : `ID: ${courseId}`;
+    ? course.title || course.name || `${t('lesson.course')} ${courseId}`
+    : `${t('lesson.course')} ID: ${courseId}`;
 };
+
 const emit = defineEmits(["create", "edit", "delete", "pageChange"]);
 
 const loadLessons = async () => {
@@ -142,7 +130,7 @@ const loadLessons = async () => {
     totalLessons.value = response.totalElements || 0;
   } catch (error) {
     console.error("Lỗi khi tải bài học:", error);
-    ElMessage.error("Không thể tải danh sách bài học");
+    ElMessage.error(t('lesson.saveFailed'));
     lessons.value = [];
     totalLessons.value = 0;
   }

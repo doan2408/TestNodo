@@ -2,8 +2,8 @@
   <div class="page-container">
     <div class="header-section">
       <div class="header-content">
-        <h1>Quản lý Khóa học</h1>
-        <p class="subtitle">Hệ thống quản lý khóa học</p>
+        <h1>{{ t("course.title") }}</h1>
+        <p class="subtitle">{{ t("course.subtitle") }}</p>
       </div>
     </div>
 
@@ -13,7 +13,7 @@
         <div class="search-inputs">
           <el-input
             v-model="keyword"
-            placeholder="Tìm kiếm khóa học..."
+            :placeholder="t('course.searchPlaceholder')"
             clearable
             class="custom-input search-input"
             @input="searchCourses"
@@ -29,7 +29,7 @@
       <div class="action-toolbar">
         <el-button type="primary" @click="createCourse" class="action-button">
           <span class="button-icon">➕</span>
-          Thêm Khóa học Mới
+          {{ t("course.addNew") }}
         </el-button>
         <el-button
           type="success"
@@ -38,7 +38,7 @@
           class="action-button"
         >
           <span class="button-icon" v-if="!exporting">📥</span>
-          Xuất Excel
+          {{ t("course.exportExcel") }}
         </el-button>
       </div>
 
@@ -94,12 +94,16 @@ import {
   exportCourses,
 } from "@/api/CourseService";
 
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 const router = useRouter();
 
 const dialogVisible = ref(false);
 const selectedCourse = ref(null);
 const isEdit = ref(false);
-const dialogTitle = ref("Thêm Khóa học");
+const dialogTitle = ref("");
 const formErrors = ref([]);
 
 // SEARCH
@@ -144,6 +148,7 @@ const loadCourses = async () => {
     console.error(err);
     courses.value = [];
     totalElements.value = 0;
+    ElMessage.error("Không thể tải danh sách khóa học"); // hoặc tạo key i18n nếu muốn
   }
 };
 
@@ -165,7 +170,7 @@ const handleExport = async () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
-    ElMessage.success("Đã tải file Excel.");
+    ElMessage.success("Đã tải file Excel."); // hoặc t('common.success')
   } catch (err) {
     console.error(err);
     ElMessage.error("Xuất Excel thất bại.");
@@ -197,7 +202,7 @@ const createCourse = () => {
   formErrors.value = [];
   selectedCourse.value = null;
   isEdit.value = false;
-  dialogTitle.value = "Thêm Khóa học Mới";
+  dialogTitle.value = t("course.addNew");
   dialogVisible.value = true;
 };
 
@@ -206,7 +211,7 @@ const editCourse = (course) => {
   formErrors.value = [];
   selectedCourse.value = { ...course };
   isEdit.value = true;
-  dialogTitle.value = "Cập nhật Khóa học";
+  dialogTitle.value = t("course.update");
   dialogVisible.value = true;
 };
 
@@ -246,10 +251,10 @@ const saveCourse = async ({ course, thumbnailFile, deleteThumbnailIds }) => {
 
     if (course.id) {
       await apiUpdateCourse(course.id, formData);
-      ElMessage.success("Cập nhật khóa học thành công!");
+      ElMessage.success(t("course.updateSuccess"));
     } else {
       await apiCreateCourse(formData);
-      ElMessage.success("Tạo khóa học thành công!");
+      ElMessage.success(t("course.createSuccess"));
     }
 
     dialogVisible.value = false;
@@ -266,10 +271,10 @@ const saveCourse = async ({ course, thumbnailFile, deleteThumbnailIds }) => {
       } else if (typeof errorMessages === "string") {
         ElMessage.error(errorMessages);
       } else {
-        ElMessage.error("Lưu thất bại!");
+        ElMessage.error(t("common.saveFailed"));
       }
     } else {
-      ElMessage.error("Lưu thất bại!");
+      ElMessage.error(t("common.saveFailed"));
     }
   }
 };

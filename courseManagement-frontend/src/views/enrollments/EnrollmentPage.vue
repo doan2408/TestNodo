@@ -2,8 +2,8 @@
   <div class="page-container">
     <div class="header-section">
       <div class="header-content">
-        <h1>Quản lý Sinh viên</h1>
-        <p class="subtitle">Hệ thống quản lý hồ sơ và thông tin sinh viên</p>
+        <h1>{{ t('student.title') }}</h1>
+        <p class="subtitle">{{ t('student.subtitle') }}</p>
       </div>
     </div>
 
@@ -13,7 +13,7 @@
         <div class="search-inputs">
           <el-input
             v-model="keyword"
-            placeholder="Tìm kiếm theo tên, email, sđt..."
+            :placeholder="t('student.searchPlaceholder')"
             clearable
             class="custom-input search-input"
             @input="searchStudents"
@@ -25,17 +25,17 @@
 
           <el-select
             v-model="gender"
-            placeholder="Tất cả giới tính"
+            :placeholder="t('student.gender')"
             clearable
             class="custom-select gender-select"
             @change="searchStudents"
           >
-            <el-option label="Nam" value="1" />
-            <el-option label="Nữ" value="0" />
+            <el-option :label="t('student.male')" value="1" />
+            <el-option :label="t('student.female')" value="0" />
           </el-select>
 
           <el-button type="danger" @click="showDeleteEnrollmentModal">
-            Xóa đăng ký
+            {{ t('enrollment.delete') }}
           </el-button>
         </div>
       </div>
@@ -61,10 +61,10 @@
       </div>
     </div>
 
-    <!-- Dialog: Quản lý đăng ký khóa học -->
+    <!-- Dialog: Enrollment Management -->
     <el-dialog
       v-model="enrollmentDialogVisible"
-      title="Quản lý Đăng ký Khóa học"
+      :title="t('enrollment.title')"
       width="600px"
       @close="closeEnrollmentDialog"
       destroy-on-close
@@ -81,7 +81,7 @@
       />
     </el-dialog>
 
-    <!-- Modal: Xóa đăng ký -->
+    <!-- Modal: Delete Enrollment -->
     <EnrollmentDeleteModal
       v-model="deleteEnrollmentVisible"
       :studentSelect="studentSelect"
@@ -92,15 +92,13 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted, watch } from "vue";
+import { ref, nextTick, onMounted } from "vue";
 import StudentTable from "@/components/studentsComponent/StudentTable.vue";
 import EnrollmentForm from "@/components/enrollmentComponent/EnrollmentForm.vue";
 import EnrollmentDeleteModal from "@/components/enrollmentComponent/ModalDelete.vue";
 import { ElMessage } from "element-plus";
 import {
   getAllStudent,
-  createStudent as apiCreateStudent,
-  updateStudent as apiUpdateStudent,
   deleteStudent as apiDeleteStudent,
   exportStudents,
   getSelectStudents,
@@ -112,10 +110,15 @@ import {
   deleteEnrollment,
 } from "@/api/EnrollmentService";
 
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
+// STATE
 const dialogVisible = ref(false);
 const selectedStudent = ref(null);
 const isEdit = ref(false);
-const dialogTitle = ref("Tạo Sinh viên Mới");
+const dialogTitle = ref("");
 const formErrors = ref([]);
 const isRead = ref(false);
 
@@ -134,44 +137,38 @@ const genderToSearch = ref("");
 
 let searchTimeout = null;
 
-// Pagination state
+// Pagination
 const page = ref(0);
 const size = ref(10);
 
-// Data state
+// Data
 const students = ref([]);
 const totalElements = ref(0);
-
 const studentListRef = ref(null);
-
 const studentSelect = ref([]);
 
 // Columns configuration
 const columns = ref([
-  { prop: "name", label: "Tên" },
+  { prop: "name", label: "Name" },
   { prop: "email", label: "Email" },
   { prop: "phone", label: "Phone" },
-  { prop: "gender", label: "Giới tính", width: "100" },
-  { prop: "status", label: "Trạng thái", width: "120" },
+  { prop: "gender", label: "Gender", width: "100" },
+  { prop: "status", label: "Status", width: "120" },
 ]);
 
-// Load courses
+// LOAD COURSES
 const loadCourses = async () => {
   try {
     const response = await getSelectCourses();
     allCourses.value = response.data || response || [];
   } catch (error) {
-    console.error("Lỗi khi tải danh sách khóa học:", error);
-    ElMessage.error("Không thể tải danh sách khóa học");
+    console.error(t('enrollment.loadCoursesFailed'), error);
+    ElMessage.error(t('enrollment.loadCoursesFailed'));
     allCourses.value = [];
   }
 };
 
-onMounted(() => {
-  loadCourses();
-  loadSelectStudents();
-});
-
+// LOAD STUDENTS
 const loadSelectStudents = async () => {
   try {
     const response = await getSelectStudents();
@@ -181,9 +178,7 @@ const loadSelectStudents = async () => {
   }
 };
 
-console.log("student select: ", studentSelect.value);
-
-// Load students function
+// Load students data
 const loadStudents = async () => {
   try {
     const res = await getAllStudent({
@@ -203,16 +198,13 @@ const loadStudents = async () => {
   }
 };
 
-// Export function
-const exportStudentsData = async (params) => {
-  return await exportStudents(params);
-};
+// Export
+const exportStudentsData = async (params) => await exportStudents(params);
 
-// Delete function
-const deleteStudentData = async (id) => {
-  return await apiDeleteStudent(id);
-};
+// Delete
+const deleteStudentData = async (id) => await apiDeleteStudent(id);
 
+// SEARCH
 const searchStudents = () => {
   if (searchTimeout) clearTimeout(searchTimeout);
 
@@ -220,27 +212,28 @@ const searchStudents = () => {
     page.value = 0;
     keywordToSearch.value = keyword.value;
     genderToSearch.value = gender.value;
-
     await nextTick();
     studentListRef.value?.loadStudents?.();
   }, 500);
 };
 
+// Pagination
 const onPageChange = (newPage) => {
   page.value = newPage;
   studentListRef.value?.loadStudents?.();
 };
 
+// CREATE / VIEW / EDIT
 const createStudent = () => {
   formErrors.value = [];
   selectedStudent.value = null;
   isEdit.value = false;
-  dialogTitle.value = "Thêm Sinh viên Mới";
+  dialogTitle.value = t('student.addNew');
   dialogVisible.value = true;
 };
 
 const viewStudentEnrollment = async(student) => {
-  dialogTitle.value = "Xem Thông tin";
+  dialogTitle.value = t('student.profile');
   selectedStudent.value = { ...student };
   enrollmentLoading.value = true;
   isRead.value = true;
@@ -249,20 +242,18 @@ const viewStudentEnrollment = async(student) => {
   try {
     const response = await getEnrollmentsByStudent(student.id);
     enrolledCourses.value = response.data || response || [];
-    console.log("isRead: ", isRead.value)
-    console.log("Enrolled courses:", enrolledCourses.value);
   } catch (error) {
-    console.error("Lỗi khi tải danh sách đăng ký:", error);
-    ElMessage.error("Không thể tải danh sách đăng ký");
+    console.error(t('enrollment.loadFailed'), error);
+    ElMessage.error(t('enrollment.loadFailed'));
     enrolledCourses.value = [];
   } finally {
     enrollmentLoading.value = false;
   }
 };
 
-// Xem đăng ký khóa học của sinh viên
+// EDIT enrollment
 const editStudentEnrollment = async (student) => {
-  dialogTitle.value = "Xem Thông tin";
+  dialogTitle.value = t('student.profile');
   selectedStudent.value = { ...student };
   enrollmentLoading.value = true;
   enrollmentDialogVisible.value = true;
@@ -270,70 +261,67 @@ const editStudentEnrollment = async (student) => {
   try {
     const response = await getEnrollmentsByStudent(student.id);
     enrolledCourses.value = response.data || response || [];
-    console.log("Enrolled courses:", enrolledCourses.value);
   } catch (error) {
-    console.error("Lỗi khi tải danh sách đăng ký:", error);
-    ElMessage.error("Không thể tải danh sách đăng ký");
+    console.error(t('enrollment.loadFailed'), error);
+    ElMessage.error(t('enrollment.loadFailed'));
     enrolledCourses.value = [];
   } finally {
     enrollmentLoading.value = false;
   }
 };
 
-// Lưu đăng ký
+// SAVE enrollment
 const saveEnrollment = async (courseIds) => {
   if (!selectedStudent.value) return;
 
   enrollmentLoading.value = true;
   try {
-    const enrollmentRequest = {
+    await updateEnrollment({
       studentId: selectedStudent.value.id,
-      courseIds: courseIds,
-    };
-
-    await updateEnrollment(enrollmentRequest);
-    ElMessage.success("Cập nhật đăng ký thành công!");
+      courseIds,
+    });
+    ElMessage.success(t('enrollment.saveSuccess'));
     enrollmentDialogVisible.value = false;
   } catch (error) {
-    console.error("Lỗi khi cập nhật đăng ký:", error);
+    console.error(t('enrollment.saveFailed'), error);
     const errorMessage =
-      error.response?.data?.message || "Cập nhật đăng ký thất bại!";
+      error.response?.data?.message || t('enrollment.saveFailed');
     ElMessage.error(errorMessage);
   } finally {
     enrollmentLoading.value = false;
   }
 };
 
-// Đóng dialog enrollment
+// CLOSE enrollment dialog
 const closeEnrollmentDialog = () => {
   enrollmentDialogVisible.value = false;
   selectedStudent.value = null;
   enrolledCourses.value = [];
 };
 
-// Hiện modal xóa đăng ký
+// DELETE enrollment
 const showDeleteEnrollmentModal = () => {
   deleteEnrollmentVisible.value = true;
 };
 
-// Xác nhận xóa đăng ký
 const confirmDeleteEnrollment = async ({ studentId, courseId }) => {
   try {
     await deleteEnrollment(studentId, courseId);
-    ElMessage.success("Xóa đăng ký thành công!");
+    ElMessage.success(t('enrollment.deleteSuccess'));
     deleteEnrollmentVisible.value = false;
   } catch (error) {
-    console.error("Lỗi khi xóa đăng ký:", error);
+    console.error(t('enrollment.deleteFailed'), error);
     const errorMessage =
-      error.response?.data?.message || "Xóa đăng ký thất bại!";
+      error.response?.data?.message || t('enrollment.deleteFailed');
     ElMessage.error(errorMessage);
   }
 };
 
-const closeDialog = () => {
-  dialogVisible.value = false;
-  isRead.value = false;
-};
+// INITIAL LOAD
+onMounted(() => {
+  loadCourses();
+  loadSelectStudents();
+});
 </script>
 
 <style scoped>

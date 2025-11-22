@@ -3,8 +3,8 @@
     <!-- Header Section -->
     <div class="header-section">
       <div class="header-content">
-        <h1>Quản lý Bài học</h1>
-        <p class="subtitle">Hệ thống quản lý bài học của khóa học</p>
+        <h1>{{ t("lesson.title") }}</h1>
+        <p class="subtitle">{{ t("lesson.subtitle") }}</p>
       </div>
     </div>
 
@@ -51,6 +51,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useI18n } from "vue-i18n";
 import LessonList from "@/components/lessonsComponent/LessonList.vue";
 import LessonForm from "@/components/lessonsComponent/LessonForm.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
@@ -65,10 +66,13 @@ import { getSelectCourses } from "@/api/CourseService";
 const route = useRoute();
 const courseId = ref(route.params.courseId ? Number(route.params.courseId) : null);
 
+// i18n setup
+const { t } = useI18n();
+
 const dialogVisible = ref(false);
 const selectedLesson = ref(null);
 const isEdit = ref(false);
-const dialogTitle = ref("Thêm Bài học");
+const dialogTitle = ref(t("lesson.addNew"));
 
 // Pagination state
 const page = ref(1);
@@ -91,7 +95,7 @@ const loadCourses = async () => {
     courses.value = response.data || response || [];
   } catch (error) {
     console.error("Lỗi khi tải danh sách khóa học:", error);
-    ElMessage.error("Không thể tải danh sách khóa học");
+    ElMessage.error(t("common.error"));
     courses.value = [];
   }
 };
@@ -104,7 +108,7 @@ onMounted(() => {
 const createLesson = () => {
   selectedLesson.value = null;
   isEdit.value = false;
-  dialogTitle.value = "Thêm Bài học Mới";
+  dialogTitle.value = t("lesson.addNew");
   formErrors.value = [];
   dialogVisible.value = true;
 };
@@ -113,7 +117,7 @@ const createLesson = () => {
 const editLesson = (lesson) => {
   selectedLesson.value = { ...lesson };
   isEdit.value = true;
-  dialogTitle.value = "Cập nhật Bài học";
+  dialogTitle.value = t("lesson.update");
   formErrors.value = [];
   dialogVisible.value = true;
 };
@@ -144,10 +148,10 @@ const saveLesson = async ({ lesson, videoFile, thumbnailFile, deleteVideoIds, de
 
     if (lesson.id) {
       await apiUpdateLesson(lesson.id, formData);
-      ElMessage.success("Cập nhật thành công!");
+      ElMessage.success(t("lesson.updateSuccess"));
     } else {
       await apiCreateLesson(formData);
-      ElMessage.success("Tạo bài học thành công!");
+      ElMessage.success(t("lesson.createSuccess"));
     }
     dialogVisible.value = false;
     lessonListRef.value?.loadLessons?.();
@@ -157,8 +161,8 @@ const saveLesson = async ({ lesson, videoFile, thumbnailFile, deleteVideoIds, de
       formErrors.value = errorMessages;
       ElMessage.error(errorMessages.join("\n"));
     } else {
-      formErrors.value = [errorMessages || "Lưu thất bại!"];
-      ElMessage.error(errorMessages || "Lưu thất bại!");
+      formErrors.value = [errorMessages || t("lesson.saveFailed")];
+      ElMessage.error(errorMessages || t("lesson.saveFailed"));
     }
   }
 };
@@ -166,16 +170,16 @@ const saveLesson = async ({ lesson, videoFile, thumbnailFile, deleteVideoIds, de
 // Delete lesson
 const deleteLesson = async (id) => {
   try {
-    await ElMessageBox.confirm("Xóa bài học này?", "Xác nhận", { 
-      confirmButtonText: "Có", 
-      cancelButtonText: "Hủy", 
+    await ElMessageBox.confirm(t("lesson.deleteConfirm"), t("common.confirm"), { 
+      confirmButtonText: t("common.yes"), 
+      cancelButtonText: t("common.no"), 
       type: "warning" 
     });
     await apiDeleteLesson(id);
-    ElMessage.success("Xóa thành công!");
+    ElMessage.success(t("lesson.deleteSuccess"));
     lessonListRef.value?.loadLessons?.();
   } catch (error) {
-    if (error !== "cancel") ElMessage.error("Xóa thất bại!");
+    if (error !== "cancel") ElMessage.error(t("lesson.deleteFailed"));
   }
 };
 

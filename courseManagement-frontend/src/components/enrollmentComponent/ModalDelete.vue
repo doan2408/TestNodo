@@ -1,16 +1,16 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="Xóa Đăng Ký Khóa Học"
+    :title="t('enrollment.deleteTitle')"
     width="500px"
     @close="handleClose"
   >
     <el-form label-width="120px">
       <!-- Sinh viên -->
-      <el-form-item label="Sinh viên">
+      <el-form-item :label="t('enrollment.student')">
         <el-select
           v-model="selectedStudent"
-          placeholder="Chọn sinh viên"
+          :placeholder="t('enrollment.selectStudent')"
           style="width: 100%"
           filterable
           clearable
@@ -31,10 +31,10 @@
       </el-form-item>
 
       <!-- Khóa học -->
-      <el-form-item label="Khóa học">
+      <el-form-item :label="t('enrollment.course')">
         <el-select
           v-model="selectedCourse"
-          placeholder="Chọn khóa học cần xóa"
+          :placeholder="t('enrollment.selectCourse')"
           style="width: 100%"
           filterable
           :loading="loadingCourses"
@@ -45,34 +45,32 @@
             :key="course.id"
             :label="`${course.name} - ${course.code}`"
             :value="course.id"
-          >
-
-          </el-option>
+          />
         </el-select>
         <div 
           v-if="selectedStudent && studentCourses.length === 0 && !loadingCourses" 
           style="margin-top: 8px; color: #909399; font-size: 12px"
         >
-          ⚠️ Sinh viên này chưa đăng ký khóa học nào
+          ⚠️ {{ t('enrollment.noCourse') }}
         </div>
         <div 
           v-if="selectedStudent && studentCourses.length > 0" 
           style="margin-top: 8px; color: #67c23a; font-size: 12px"
         >
-          ✓ Tìm thấy {{ studentCourses.length }} khóa học đã đăng ký
+          ✓ {{ t('enrollment.foundCourses', { count: studentCourses.length }) }}
         </div>
       </el-form-item>
     </el-form>
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose">Hủy</el-button>
+        <el-button @click="handleClose">{{ t('common.cancel') }}</el-button>
         <el-button
           type="danger"
           @click="handleConfirm"
           :disabled="!selectedStudent || !selectedCourse"
         >
-          Xóa đăng ký
+          {{ t('enrollment.deleteConfirm') }}
         </el-button>
       </div>
     </template>
@@ -90,6 +88,10 @@ const props = defineProps({
   courses: { type: Array, default: () => [] },
 });
 
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 const emit = defineEmits(["update:modelValue", "confirm"]);
 
 const visible = ref(false);
@@ -103,7 +105,6 @@ watch(
   (newVal) => {
     visible.value = newVal;
     if (!newVal) {
-      // Reset khi đóng
       resetForm();
     }
   }
@@ -122,27 +123,19 @@ const resetForm = () => {
 
 // Khi chọn sinh viên, load danh sách khóa học của sinh viên đó
 const onStudentChange = async (studentId) => {
-  selectedCourse.value = null; // Reset course selection
+  selectedCourse.value = null;
   studentCourses.value = [];
   
-  if (!studentId) {
-    return;
-  }
+  if (!studentId) return;
 
   loadingCourses.value = true;
   try {
     const response = await getEnrollmentsByStudent(studentId);
     const enrollmentData = response.data || response || [];
     
-    console.log("Raw enrollment data:", enrollmentData);
-    
-    // Xử lý data trả về: lấy courses từ mảng enrollmentData
     if (Array.isArray(enrollmentData) && enrollmentData.length > 0) {
-      // Lấy courses từ enrollment đầu tiên (vì có thể trả về array với 1 phần tử)
       const enrollment = enrollmentData[0];
-      
       if (enrollment.courses && Array.isArray(enrollment.courses)) {
-        // Map courses từ cấu trúc API sang cấu trúc component
         studentCourses.value = enrollment.courses.map(course => ({
           id: course.courseId,
           title: course.courseName,
@@ -151,15 +144,13 @@ const onStudentChange = async (studentId) => {
         }));
       }
     }
-
-    console.log("Student courses loaded:", studentCourses.value);
     
     if (studentCourses.value.length === 0) {
-      ElMessage.info("Sinh viên này chưa đăng ký khóa học nào");
+      ElMessage.info(t('enrollment.noCourse'));
     }
   } catch (error) {
-    console.error("Lỗi khi tải khóa học của sinh viên:", error);
-    ElMessage.error("Không thể tải danh sách khóa học của sinh viên");
+    console.error("Error loading student courses:", error);
+    ElMessage.error(t('enrollment.loadCourseFailed'));
     studentCourses.value = [];
   } finally {
     loadingCourses.value = false;

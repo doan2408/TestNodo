@@ -2,17 +2,23 @@
   "common": {
     "add": "Thêm",
     "edit": "Sửa",
+    "view": "xem",
     "delete": "Xóa",
     "cancel": "Hủy",
     "save": "Lưu",
     "search": "Tìm kiếm",
     "confirm": "Xác nhận",
+    "status": "Trạng thái",
     "yes": "Có",
     "no": "Không",
     "loading": "Đang tải...",
     "error": "Lỗi",
     "success": "Thành công",
-    "deleteConfirm": "Bạn có chắc muốn xóa?"
+    "deleteConfirm": "Bạn có chắc muốn xóa?",
+    "action": "Thao tác",
+    "none": "Không có",
+    "required": "Không được để trống",
+    "stt": "STT"
   },
   "student": {
     "title": "Quản lý Sinh viên",
@@ -75,6 +81,32 @@
     "saveFailed": "Lưu thất bại!",
     "deleteFailed": "Xóa thất bại!",
     "titleRequired": "Tiêu đề bài học không được để trống",
-    "deleteConfirm": "Xóa bài học này?"
+    "deleteConfirm": "Xóa bài học này?",
+    "course": "Khóa học",
+    "newVideo": "video mới",
+    "newThumbnail": "newThumbnail"
+  },
+  "enrollment": {
+    "title": "Quản Lý Đăng Ký",
+    "addNew": "Thêm Đăng ký",
+    "update": "Cập Nhật Đăng ký",
+    "view": "Xem Đăng ký",
+    "delete": "Xóa Đăng ký",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa đăng ký này không?",
+    "saveSuccess": "Đăng ký đã được lưu thành công!",
+    "saveFailed": "Lưu thất bại!",
+    "deleteSuccess": "Đăng ký đã được xóa thành công!",
+    "deleteFailed": "Xóa thất bại!",
+    "loadingCourses": "Đang tải các khóa học...",
+    "noCourses": "Chưa đăng ký khóa học nào",
+    "dialogTitle": "Quản Lý Đăng ký",
+    "deleteTitle": "Xóa Đăng Ký Khóa Học",
+    "student": "Sinh viên",
+    "course": "Khóa học",
+    "selectStudent": "Chọn sinh viên",
+    "selectCourse": "Chọn khóa học cần xóa",
+    "noCourse": "Sinh viên này chưa đăng ký khóa học nào",
+    "foundCourses": "Tìm thấy {count} khóa học đã đăng ký",
+    "deleteConfirm": "Xóa đăng ký"
   }
 }

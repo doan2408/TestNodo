@@ -1,31 +1,15 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
-import { useRouter as getRouter, useRoute as getRoute } from 'vue-router';
+import { ref, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useLocale } from '@/composables/useLocale';
 
+const router = useRouter();
+const route = useRoute();
 
-// Router instance
-const router = getRouter();
-const route = getRoute();
+const { locale, setLocale } = useLocale();
 
-// State to track current language
-const language = ref('vi'); // Default is Vietnamese
-
-// Ref to store the active link
 const activeLink = ref('');
 
-// Change language and set to the header
-const setLanguage = (lang) => {
-  language.value = lang;
-  localStorage.setItem('language', lang);
-};
-
-// Go to page based on selected route
-const goToPage = (path) => {
-  router.push(path);
-  // activeLink is handled by the watcher
-};
-
-// Sync active link with current route
 watch(
   () => route.path,
   (newPath) => {
@@ -33,125 +17,153 @@ watch(
   },
   { immediate: true }
 );
-
-
-
-onMounted(() => {
-  const savedLang = localStorage.getItem('language');
-  if (savedLang) {
-    language.value = savedLang;
-  }
-});
 </script>
 
 <template>
   <div class="header-container">
     <div class="logo">
-      <h2>Quản lý Khóa Học</h2>
+      <h2>{{ $t('course.title') }}</h2>
     </div>
+
     <div class="nav-links">
-      <el-menu mode="horizontal" :default-active="activeLink" class="menu" :ellipsis="false">
-        <el-menu-item index="/students" @click="goToPage('/students')">
-          Sinh viên
+      <el-menu :default-active="activeLink" mode="horizontal">
+        <el-menu-item index="/students" @click="router.push('/students')">
+          {{ $t('student.title') }}
         </el-menu-item>
-        <el-menu-item index="/courses" @click="goToPage('/courses')">
-          Khóa học
+
+        <el-menu-item index="/courses" @click="router.push('/courses')">
+          {{ $t('course.title') }}
         </el-menu-item>
-        <!-- <el-menu-item index="/lessons" @click="goToPage('/lessons')">
-          Bài học
-        </el-menu-item> -->
-        <el-menu-item index="/enrollments" @click="goToPage('/enrollments')">
+
+        <el-menu-item index="/enrollments" @click="router.push('/enrollments')">
           Đăng ký
         </el-menu-item>
       </el-menu>
     </div>
 
-    <!-- Language Toggle -->
     <div class="language-toggle">
+      <!-- Nút đổi ngôn ngữ: đồng bộ UI + backend -->
       <el-switch
-        v-model="language"
+        v-model="locale"
         active-value="en"
         inactive-value="vi"
         active-text="EN"
         inactive-text="VI"
-        inline-prompt
-        style="--el-switch-on-color: #4f46e5; --el-switch-off-color: #10b981"
-        @change="setLanguage"
+        @change="setLocale"
       />
     </div>
   </div>
 </template>
 
+
+
 <style scoped>
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 40px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  height: 70px;
+.header-wrapper {
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.01), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
 }
 
-.logo h2 {
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+}
+
+.logo-text {
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #4f46e5;
+  font-weight: 800;
   margin: 0;
+  background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+  -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
 }
 
-.nav-links {
+.nav-section {
   flex: 1;
   display: flex;
   justify-content: center;
 }
 
-.menu {
+.custom-menu {
   border-bottom: none !important;
-  background: transparent;
-  height: 70px;
+  background: transparent !important;
+  height: 48px;
   display: flex;
   align-items: center;
+  padding: 4px;
+  border-radius: 9999px;
+  background-color: rgba(243, 244, 246, 0.5) !important; /* Slate-100 with opacity */
 }
 
 :deep(.el-menu-item) {
-  font-size: 15px;
+  height: 40px;
+  line-height: 40px;
+  border: none !important;
+  border-radius: 9999px;
+  margin: 0 2px;
+  color: #64748b;
   font-weight: 500;
-  color: #6b7280;
-  height: 70px;
-  line-height: 70px;
-  border-bottom: 2px solid transparent;
-  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  padding: 0 20px !important;
+  transition: all 0.2s ease;
 }
 
 :deep(.el-menu-item:hover) {
-  color: #4f46e5 !important;
-  background-color: transparent !important;
+  color: #3b82f6 !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
 }
 
 :deep(.el-menu-item.is-active) {
-  color: #4f46e5 !important;
-  border-bottom: 2px solid #4f46e5 !important;
-  background-color: transparent !important;
+  background-color: #ffffff !important;
+  color: #3b82f6 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
 }
 
-.language-toggle {
-  display: flex;
-  align-items: center;
+/* Switch Styling */
+:deep(.el-switch.lang-switch .el-switch__core) {
+  border-color: #e2e8f0;
+  background-color: #f1f5f9;
 }
 
-/* Custom switch styling */
-:deep(.el-switch__core) {
-  border-radius: 20px;
-  border: 1px solid #e5e7eb;
+:deep(.el-switch.lang-switch.is-checked .el-switch__core) {
+  border-color: #6366f1;
+  background-color: #6366f1;
 }
 
 :deep(.el-switch__label) {
-  font-weight: 600;
+  color: #94a3b8;
   font-size: 12px;
+  font-weight: 600;
+}
+
+:deep(.el-switch__label.is-active) {
+  color: #6366f1;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: 0 16px;
+  }
+  
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  
+  :deep(.el-menu-item) {
+    padding: 0 12px !important;
+    font-size: 0.9rem;
+  }
 }
 </style>

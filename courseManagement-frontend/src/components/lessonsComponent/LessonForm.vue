@@ -3,7 +3,7 @@
     <!-- Error alert -->
     <el-alert
       v-if="formErrors.length > 0"
-      title="Lỗi khi lưu"
+      :title="t('lesson.saveError')"
       type="error"
       :closable="true"
       style="margin-bottom:16px"
@@ -15,12 +15,12 @@
 
     <!-- Chọn Khóa học -->
     <el-form-item 
-      label="Khóa học" 
-      :rules="[{ required: true, message: 'Vui lòng chọn khóa học', trigger: 'change' }]"
+      :label="t('lesson.course')" 
+      :rules="[{ required: true, message: t('lesson.courseRequired'), trigger: 'change' }]"
     >
       <el-select 
         v-model="localLesson.courseId" 
-        placeholder="Chọn khóa học"
+        :placeholder="t('lesson.selectCourse')"
         style="width: 100%"
         filterable
         clearable
@@ -32,28 +32,26 @@
           :key="course.id"
           :label="`${course.name} - ${course.code}`"
           :value="course.id"
-        >
-
-        </el-option>
+        ></el-option>
       </el-select>
       <span v-if="!isEdit" style="color: #909399; font-size: 12px; margin-top: 4px; display: block">
-        🔒 Đang thêm bài học vào khóa: {{ getCourseTitle(props.courseId) }}
+        🔒 {{ t('lesson.addingToCourse') }}: {{ getCourseTitle(props.courseId) }}
       </span>
       <span v-else-if="isEdit && localLesson.courseId" style="color: #409eff; font-size: 12px; margin-top: 4px; display: block">
-        💡 Có thể thay đổi khóa học cho bài học này
+        💡 {{ t('lesson.canChangeCourse') }}
       </span>
     </el-form-item>
 
     <!-- Tiêu đề -->
     <el-form-item 
-      label="Tiêu đề" 
-      :rules="[{ required: true, message: 'Tiêu đề không được để trống', trigger: 'blur' }]"
+      :label="t('lesson.title')" 
+      :rules="[{ required: true, message: t('lesson.titleRequired'), trigger: 'blur' }]"
     >
-      <el-input v-model="localLesson.title" placeholder="Nhập tiêu đề bài học" />
+      <el-input v-model="localLesson.title" :placeholder="t('lesson.titlePlaceholder')" />
     </el-form-item>
 
     <!-- Video hiện tại -->
-    <el-form-item label="Video hiện tại" v-if="existingVideos.length > 0">
+    <el-form-item :label="t('lesson.currentVideo')" v-if="existingVideos.length > 0">
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         <div 
           v-for="video in existingVideos" 
@@ -61,21 +59,21 @@
           style="position:relative;width:120px;padding:8px;border:1px solid #ddd;border-radius:4px" 
           :class="{ 'deleted': deletedVideoIds.includes(video.id) }"
         >
-          <p style="margin:0;font-size:12px;word-break:break-all">{{ video.fileName || 'Video' }}</p>
+          <p style="margin:0;font-size:12px;word-break:break-all">{{ video.fileName || t('lesson.video') }}</p>
           <el-button 
             size="small" 
             :type="deletedVideoIds.includes(video.id) ? 'success' : 'danger'" 
             style="margin-top:4px;width:100%" 
             @click="toggleDeleteVideo(video.id)"
           >
-            {{ deletedVideoIds.includes(video.id) ? '✓ Khôi phục' : '✕ Xóa' }}
+            {{ deletedVideoIds.includes(video.id) ? '✓ ' + t('lesson.restore') : '✕ ' + t('lesson.delete') }}
           </el-button>
         </div>
       </div>
     </el-form-item>
 
     <!-- Upload video -->
-    <el-form-item label="Video mới">
+    <el-form-item :label="t('lesson.newVideo')">
       <el-upload 
         drag 
         :file-list="uploadVideoList" 
@@ -85,12 +83,12 @@
         :limit="1"
       >
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-        <div class="el-upload__text">Drop video or <em>click to upload</em></div>
+        <div class="el-upload__text">{{ t('lesson.dropVideo') }} <em>{{ t('lesson.clickToUpload') }}</em></div>
       </el-upload>
     </el-form-item>
 
     <!-- Thumbnail hiện tại -->
-    <el-form-item label="Thumbnail hiện tại" v-if="existingThumbnails.length > 0">
+    <el-form-item :label="t('lesson.currentThumbnail')" v-if="existingThumbnails.length > 0">
       <div style="display:flex;gap:12px;flex-wrap:wrap">
         <div 
           v-for="thumb in existingThumbnails" 
@@ -116,7 +114,7 @@
     </el-form-item>
 
     <!-- Upload thumbnail -->
-    <el-form-item label="Thumbnail mới">
+    <el-form-item :label="t('lesson.newThumbnail')">
       <el-upload 
         list-type="picture-card" 
         :file-list="uploadThumbnailList" 
@@ -132,8 +130,8 @@
 
     <!-- Submit -->
     <el-form-item>
-      <el-button type="primary" @click="submitForm">Lưu</el-button>
-      <el-button @click="cancelForm">Hủy</el-button>
+      <el-button type="primary" @click="submitForm">{{ t('common.save') }}</el-button>
+      <el-button @click="cancelForm">{{ t('common.cancel') }}</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -142,6 +140,9 @@
 import { ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import { UploadFilled } from "@element-plus/icons-vue";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const props = defineProps({
   lesson: { type: Object, default: null },

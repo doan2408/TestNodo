@@ -2,56 +2,53 @@
   <el-form :model="localStudent" label-width="120px">
     <!-- Tên Sinh viên -->
     <el-form-item
-      label="Tên"
+      :label="t('student.name')"
       :rules="[
-        { required: true, message: 'Tên không được để trống', trigger: 'blur' },
+        { required: true, message: t('student.nameRequired'), trigger: 'blur' },
       ]"
     >
-      <el-input v-model="localStudent.name" placeholder="Nhập tên sinh viên" />
+      <el-input v-model="localStudent.name" :placeholder="t('student.name')" />
     </el-form-item>
 
     <!-- Giới tính -->
-    <el-form-item label="Giới tính">
+    <el-form-item :label="t('student.gender')">
       <el-radio-group v-model="localStudent.gender">
-        <el-radio label="1">Nam</el-radio>
-        <el-radio label="0">Nữ</el-radio>
+        <el-radio :label="'1'">{{ t('student.male') }}</el-radio>
+        <el-radio :label="'0'">{{ t('student.female') }}</el-radio>
       </el-radio-group>
     </el-form-item>
 
     <!-- Email -->
     <el-form-item
-      label="Email"
+      :label="t('student.email')"
       :rules="[
         {
           required: true,
           type: 'email',
-          message: 'Email không hợp lệ',
+          message: t('student.emailRequired'),
           trigger: 'blur',
         },
       ]"
     >
-      <el-input
-        v-model="localStudent.email"
-        placeholder="Nhập email sinh viên"
-      />
+      <el-input v-model="localStudent.email" :placeholder="t('student.email')" />
     </el-form-item>
 
     <!-- Điện thoại -->
     <el-form-item
-      label="Điện thoại"
+      :label="t('student.phone')"
       :rules="[
         {
           required: true,
-          message: 'Số điện thoại không hợp lệ',
+          message: t('common.required'),
           trigger: 'blur',
         },
       ]"
     >
-      <el-input v-model="localStudent.phone" placeholder="Nhập số điện thoại" />
+      <el-input v-model="localStudent.phone" :placeholder="t('student.phone')" />
     </el-form-item>
 
     <!-- Avatar hiện tại: gallery với nút xóa/khôi phục -->
-    <el-form-item label="Avatar hiện tại" v-if="existingAvatars.length > 0">
+    <el-form-item :label="t('student.avatar')" v-if="existingAvatars.length > 0">
       <div style="display: flex; gap: 12px; flex-wrap: wrap">
         <div
           v-for="avatar in existingAvatars"
@@ -74,7 +71,6 @@
           />
           <el-button
             size="small"
-            type="danger"
             :type="deletedAvatarIds.includes(avatar.id) ? 'success' : 'danger'"
             style="
               position: absolute;
@@ -103,14 +99,14 @@
               font-size: 12px;
             "
           >
-            Sẽ xóa
+            {{ t('common.deleteConfirm') }}
           </span>
         </div>
       </div>
     </el-form-item>
 
     <!-- Upload avatar mới (chỉ 1 file) -->
-    <el-form-item label="Avatar mới" v-if="!props.isRead">
+    <el-form-item :label="t('student.avatar')" v-if="!props.isRead">
       <el-upload
         list-type="picture-card"
         :file-list="uploadList"
@@ -127,14 +123,14 @@
         />
       </el-upload>
       <p style="color: #999; font-size: 12px; margin-top: 8px">
-        Upload avatar mới sẽ thay thế avatar cũ
+        {{ t('student.avatar') }}
       </p>
     </el-form-item>
 
     <!-- Error messages từ backend -->
     <el-alert
       v-if="formErrors.length > 0"
-      title="Lỗi khi lưu"
+      :title="t('common.error')"
       type="error"
       :closable="true"
       style="margin-bottom: 16px"
@@ -146,31 +142,30 @@
 
     <!-- Submit -->
     <el-form-item v-if="!props.isRead">
-      <el-button type="primary" @click="submitForm" :loading="loading"
-        >Lưu</el-button
-      >
-      <el-button @click="cancelEdit">Hủy</el-button>
+      <el-button type="primary" @click="submitForm" :loading="loading">
+        {{ t('common.save') }}
+      </el-button>
+      <el-button @click="cancelEdit">{{ t('common.cancel') }}</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script setup>
 import { ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 
+const { t } = useI18n();
+
 const props = defineProps({
-  student: {
-    type: Object,
-    default: null,
-  },
+  student: { type: Object, default: null },
   isEdit: { type: Boolean, default: false },
   isRead: { type: Boolean, default: false },
-  errors: { type: Array, default: () => [] }, // nhận errors từ parent
+  errors: { type: Array, default: () => [] },
 });
 
-console.log("isRead: ", props.isRead)
+const emit = defineEmits(["save", "cancel"]);
 
-// fallback object nếu student null
 const defaultStudent = () => ({
   id: null,
   name: "",
@@ -180,12 +175,7 @@ const defaultStudent = () => ({
   avatar: [],
 });
 
-const emit = defineEmits(["save", "cancel"]);
-
-const localStudent = ref({
-  ...(props.student || defaultStudent()),
-  avatarFile: null,
-});
+const localStudent = ref({ ...(props.student || defaultStudent()), avatarFile: null });
 const existingAvatars = ref(props.student?.avatar || []);
 const deletedAvatarIds = ref([]);
 const newAvatarPreview = ref("");
@@ -193,7 +183,7 @@ const uploadList = ref([]);
 const loading = ref(false);
 const formErrors = ref([]);
 
-// đồng bộ prop
+// Watch student prop
 watch(
   () => props.student,
   (newVal) => {
@@ -215,7 +205,6 @@ watch(
   { deep: true, immediate: true }
 );
 
-// watch errors từ parent
 watch(
   () => props.errors,
   (newErrors) => {
@@ -224,60 +213,51 @@ watch(
   { immediate: true }
 );
 
-// Xử lý upload avatar mới (chỉ 1 file)
 const beforeUpload = (file) => {
   localStudent.value.avatarFile = file;
-  // Nếu upload avatar mới, đánh dấu tất cả avatar cũ để xóa
   deletedAvatarIds.value = existingAvatars.value.map((a) => a.id);
   const reader = new FileReader();
-  reader.onload = (e) => {
-    newAvatarPreview.value = e.target.result;
-  };
+  reader.onload = (e) => (newAvatarPreview.value = e.target.result);
   reader.readAsDataURL(file);
   uploadList.value = [{ name: file.name }];
-  return false; // không auto upload
+  return false;
 };
 
 const onRemove = () => {
   localStudent.value.avatarFile = null;
   newAvatarPreview.value = "";
   uploadList.value = [];
-  deletedAvatarIds.value = []; // reset xóa avatar cũ nếu bỏ upload
+  deletedAvatarIds.value = [];
 };
 
-// Toggle xóa/khôi phục avatar
 const toggleDeleteAvatar = (id) => {
   if (!deletedAvatarIds.value.includes(id)) {
-    // thêm vào danh sách xóa
     deletedAvatarIds.value.push(id);
   } else {
-    // bỏ khỏi danh sách xóa (khôi phục)
     deletedAvatarIds.value = deletedAvatarIds.value.filter((aid) => aid !== id);
   }
 };
 
-// Submit form
 const submitForm = () => {
-  // validate cơ bản
   if (!localStudent.value.name || !localStudent.value.name.trim()) {
-    ElMessage.error("Tên không được để trống");
+    ElMessage.error(t('student.nameRequired'));
     return;
   }
   if (!localStudent.value.email || !localStudent.value.email.trim()) {
-    ElMessage.error("Email không được để trống");
+    ElMessage.error(t('student.emailRequired'));
     return;
   }
 
   emit("save", {
     student: { ...localStudent.value },
     avatarFile: localStudent.value.avatarFile,
-    deleteAvatarIds: deletedAvatarIds.value, // emit list id avatar cần xóa
+    deleteAvatarIds: deletedAvatarIds.value,
   });
 };
 
-// Hủy edit
 const cancelEdit = () => emit("cancel");
 </script>
+
 
 <style scoped>
 /* Highlight avatar bị đánh dấu xóa */

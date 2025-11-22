@@ -2,17 +2,23 @@
   "common": {
     "add": "Add",
     "edit": "Edit",
+    "view": "View",
     "delete": "Delete",
     "cancel": "Cancel",
     "save": "Save",
     "search": "Search",
     "confirm": "Confirm",
+    "status": "Status",
     "yes": "Yes",
     "no": "No",
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
-    "deleteConfirm": "Are you sure to delete?"
+    "deleteConfirm": "Are you sure to delete?",
+    "action": "Action",
+    "none": "No data",
+    "required": "This field is required",
+    "stt": "st"
   },
   "student": {
     "title": "Student Management",
@@ -75,6 +81,33 @@
     "saveFailed": "Save failed!",
     "deleteFailed": "Delete failed!",
     "titleRequired": "Lesson title is required",
-    "deleteConfirm": "Delete this lesson?"
+    "deleteConfirm": "Delete this lesson?",
+    "course": "course",
+    "newVideo": "newVideo",
+    "newThumbnail": "newThumbnail"
+
+  },
+  "enrollment": {
+    "title": "Enrollment Management",
+    "addNew": "Add Enrollment",
+    "update": "Update Enrollment",
+    "view": "View Enrollment",
+    "delete": "Delete Enrollment",
+    "confirmDelete": "Are you sure to delete this enrollment?",
+    "saveSuccess": "Enrollment saved successfully!",
+    "saveFailed": "Save failed!",
+    "deleteSuccess": "Enrollment deleted successfully!",
+    "deleteFailed": "Delete failed!",
+    "loadingCourses": "Loading courses...",
+    "noCourses": "No courses enrolled",
+    "dialogTitle": "Enrollment Management",
+    "deleteTitle": "Delete Course Enrollment",
+    "student": "Student",
+    "course": "Course",
+    "selectStudent": "Select Student",
+    "selectCourse": "Select Course to Delete",
+    "noCourse": "This student has not enrolled in any courses",
+    "foundCourses": "{count} enrolled courses found",
+    "deleteConfirm": "Delete Enrollment"
   }
 }

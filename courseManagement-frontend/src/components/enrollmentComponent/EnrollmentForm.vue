@@ -59,6 +59,10 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
 });
 
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 const emit = defineEmits(["save", "cancel"]);
 
 const selectedCourses = ref([]);
