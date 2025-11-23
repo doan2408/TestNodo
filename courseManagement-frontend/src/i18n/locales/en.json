@@ -19,7 +19,8 @@
     "none": "No data",
     "required": "This field is required",
     "stt": "st",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "filter": "Gender"
   },
   "student": {
     "title": "Student Management",

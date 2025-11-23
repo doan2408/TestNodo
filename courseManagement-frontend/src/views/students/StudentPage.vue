@@ -25,7 +25,7 @@
 
           <el-select
             v-model="gender"
-            :placeholder="$t('common.none')"
+            :placeholder="$t('common.filter')"
             clearable
             class="custom-select gender-select"
             @change="searchStudents"

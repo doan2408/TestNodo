@@ -19,7 +19,8 @@
     "none": "Không có",
     "required": "Không được để trống",
     "stt": "STT",
-    "saving": "Đang lưu..."
+    "saving": "Đang lưu...",
+    "filter": "Giới tính"
   },
   "student": {
     "title": "Quản lý Sinh Viên",
