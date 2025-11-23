@@ -82,7 +82,7 @@ public class StudentService {
                         List<MediaResponse> mediaResponses = imageMapper.toResponseList(avatars);
                         st.setAvatar(mediaResponses);
                     } else {
-                        st.setAvatar(null); 
+                        st.setAvatar(null);
                     }
                 }
         );
