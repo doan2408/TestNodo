@@ -122,16 +122,107 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* Container padding */
 .course-list-container {
   padding: 20px;
+  box-sizing: border-box;
 }
 
+/* Table wrapper */
 .table-wrapper {
   margin-bottom: 20px;
 }
 
+/* Table base */
+.el-table {
+  width: 100% !important;
+  min-width: 600px; /* tránh cột co quá nhỏ */
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+/* Table header */
+.el-table th {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  padding: 12px 16px;
+  white-space: nowrap;
+}
+
+/* Table cells */
+.el-table td {
+  padding: 10px 16px;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
+  font-size: 13px;
+}
+
+/* Thumbnail image */
+.el-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Tags */
+.el-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* Action buttons cell - 2x2 grid */
+.el-table-column .cell {
+  display: grid !important;
+  grid-template-columns: repeat(2, max-content); /* 2 nút trên 2 nút dưới */
+  grid-auto-rows: max-content;
+  gap: 6px;
+  justify-content: start;
+  align-items: center;
+}
+
+/* Nút action */
+.el-table-column .cell .el-button {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Pagination */
 .pagination-wrapper {
   display: flex;
   justify-content: center;
+  margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .el-table {
+    min-width: 500px;
+  }
+
+  .el-table th,
+  .el-table td {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .el-table-column .cell {
+    grid-template-columns: repeat(2, max-content);
+    gap: 4px;
+  }
+
+  .el-table-column .cell .el-button {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
 }
 </style>

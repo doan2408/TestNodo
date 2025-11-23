@@ -84,8 +84,12 @@
     "deleteConfirm": "Delete this lesson?",
     "course": "course",
     "newVideo": "newVideo",
-    "newThumbnail": "newThumbnail"
-
+    "newThumbnail": "newThumbnail",
+    "noVideo": "No Video",
+    "noThumbnail" : "No thumnail",
+    "viewVideo": "viewVideo",
+    "canChangeCourse": "can Change Course",
+    "addingToCourse": "adding to course"
   },
   "enrollment": {
     "title": "Enrollment Management",

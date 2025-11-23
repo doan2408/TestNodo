@@ -21,7 +21,7 @@
     "stt": "STT"
   },
   "student": {
-    "title": "Quản lý Sinh viên",
+    "title": "Quản lý Sinh Viên",
     "subtitle": "Hệ thống quản lý hồ sơ và thông tin sinh viên",
     "addNew": "Thêm Sinh viên Mới",
     "update": "Cập nhật Thông tin",
@@ -56,7 +56,7 @@
     "active": "Kích hoạt",
     "inactive": "Ngừng kích hoạt",
     "searchPlaceholder": "Tìm kiếm khóa học",
-    "viewLessons": "Xem BH",
+    "viewLessons": "Xem Bài Học",
     "createSuccess": "Tạo khóa học thành công!",
     "updateSuccess": "Cập nhật khóa học thành công!",
     "deleteSuccess": "Xóa thành công!",
@@ -84,7 +84,12 @@
     "deleteConfirm": "Xóa bài học này?",
     "course": "Khóa học",
     "newVideo": "video mới",
-    "newThumbnail": "newThumbnail"
+    "newThumbnail": "newThumbnail",
+    "noVideo": "Không có video",
+    "noThumbnail" : "Không có thumnail",
+    "viewVideo": "xem video",
+    "canChangeCourse": "có thể thay đổi",
+    "addingToCourse": "thêm cho khóa học"
   },
   "enrollment": {
     "title": "Quản Lý Đăng Ký",

@@ -196,43 +196,115 @@ const closeDialog = () => {
 </script>
 
 <style scoped>
-.page-container {
-  min-height: 100vh;
-  background-color: #f3f4f6;
-  padding: 40px 20px;
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+/* Modern Variables */
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --bg-color: #f9fafb;
+  --card-bg: #ffffff;
+  --text-main: #111827;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --shadow-soft: 0 4px 8px rgba(0,0,0,0.06);
+  --shadow-medium: 0 6px 16px rgba(0,0,0,0.12);
 }
 
+/* Page Container */
+.page-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, #eef2ff, #f3f4f6 40%);
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Header Section */
 .header-section {
   max-width: 1200px;
   margin: 0 auto 32px;
   text-align: center;
+  animation: slideDown 0.4s ease;
 }
 
 .header-content h1 {
-  font-size: 2.25rem;
+  font-size: 2.4rem;
   font-weight: 700;
-  color: #111827;
-  margin: 0 0 8px;
-}
-
-.subtitle {
-  font-size: 1.1rem;
-  color: #6b7280;
+  color: var(--text-main);
   margin: 0;
 }
 
-.main-card {
-  max-width: 1200px;
-  margin: 0 auto;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  padding: 32px;
-  border: 1px solid #e5e7eb;
+.subtitle {
+  font-size: 1.15rem;
+  margin-top: 8px;
+  color: var(--text-secondary);
 }
 
-.list-container {
+/* Main Card */
+.main-card {
   width: 100%;
+  max-width: 1200px;
+  background: var(--card-bg);
+  border-radius: 18px;
+  padding: 32px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-soft);
+  transition: 0.3s ease;
+  animation: fadeUp 0.5s ease;
+}
+
+.main-card:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-3px);
+}
+
+/* List Container */
+.list-container {
+  margin-top: 10px;
+}
+
+/* El-Dialog Styling */
+:deep(.el-dialog) {
+  border-radius: 16px;
+  box-shadow: var(--shadow-medium);
+  animation: scaleIn 0.3s ease;
+}
+
+:deep(.el-dialog__header) {
+  padding: 18px 24px;
+  background-color: #f9fafb;
+  border-bottom: 1px solid var(--border-color);
+}
+
+:deep(.el-dialog__title) {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+:deep(.el-dialog__body) {
+  padding: 24px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 </style>

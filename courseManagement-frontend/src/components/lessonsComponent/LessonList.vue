@@ -165,4 +165,107 @@ defineExpose({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Container & Toolbar */
+div {
+  box-sizing: border-box;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+/* Table wrapper */
+.el-table {
+  width: 100% !important;
+  min-width: 600px; /* tránh table bị co quá nhỏ */
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* Table headers */
+.el-table th {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  padding: 12px 16px;
+  white-space: nowrap;
+}
+
+/* Table cells */
+.el-table td {
+  padding: 10px 16px;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+/* Video / Thumbnail links */
+.el-table a {
+  color: #409eff;
+  text-decoration: underline;
+  font-size: 12px;
+}
+
+.el-table span {
+  font-size: 11px;
+  color: #999;
+}
+
+/* Thumbnail images */
+.el-image {
+  width: 80px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Action buttons */
+.el-table .el-button {
+  margin-right: 6px;
+  font-size: 12px;
+  padding: 2px 8px;
+}
+
+/* Pagination */
+div[style*="margin-top: 20px"] {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .el-table {
+    min-width: 500px;
+  }
+
+  .el-table th,
+  .el-table td {
+    padding: 8px 12px;
+  }
+
+  .el-table .el-button {
+    margin-right: 4px;
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  /* Toolbar wrap */
+  .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toolbar input {
+    width: 100% !important;
+  }
+}
+
+</style>
