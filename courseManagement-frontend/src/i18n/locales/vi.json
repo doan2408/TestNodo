@@ -18,7 +18,8 @@
     "action": "Thao tác",
     "none": "Không có",
     "required": "Không được để trống",
-    "stt": "STT"
+    "stt": "STT",
+    "saving": "Đang lưu..."
   },
   "student": {
     "title": "Quản lý Sinh Viên",
@@ -41,7 +42,8 @@
     "deleteFailed": "Xóa thất bại!",
     "nameRequired": "Tên không được để trống",
     "emailRequired": "Email không được để trống",
-    "exportExcel": "Xuất Excel"
+    "exportExcel": "Xuất Excel",
+    "phoneInvalid": "Số điện thoại không hợp lệ"
   },
   "course": {
     "title": "Quản lý Khóa học",
@@ -89,7 +91,11 @@
     "noThumbnail" : "Không có thumnail",
     "viewVideo": "xem video",
     "canChangeCourse": "có thể thay đổi",
-    "addingToCourse": "thêm cho khóa học"
+    "addingToCourse": "thêm cho khóa học",
+    "titlePlaceholder": "tiêu đề bài học",
+    "dropVideo": "Video xóa",
+    "restore": "sẽ xóa",
+    "delete": "xóa"
   },
   "enrollment": {
     "title": "Quản Lý Đăng Ký",

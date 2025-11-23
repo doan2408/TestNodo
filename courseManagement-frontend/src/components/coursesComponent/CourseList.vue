@@ -29,7 +29,7 @@
         </el-table-column>
 
         <!-- Actions -->
-        <el-table-column :label="t('common.action')" width="340">
+        <el-table-column :label="t('common.action')" width="420">
           <template #default="scope">
             <el-button size="small" @click="$emit('edit', scope.row)">{{t('common.edit')}}</el-button>
             <el-button size="small" @click="$emit('viewStudents', scope.row.id)">{{t('student.title')}}</el-button>

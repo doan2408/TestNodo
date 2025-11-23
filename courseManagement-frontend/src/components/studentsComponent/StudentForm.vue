@@ -13,8 +13,8 @@
     <!-- Giới tính -->
     <el-form-item :label="t('student.gender')">
       <el-radio-group v-model="localStudent.gender">
-        <el-radio :label="'1'">{{ t('student.male') }}</el-radio>
-        <el-radio :label="'0'">{{ t('student.female') }}</el-radio>
+        <el-radio :label="'1'">{{ t("student.male") }}</el-radio>
+        <el-radio :label="'0'">{{ t("student.female") }}</el-radio>
       </el-radio-group>
     </el-form-item>
 
@@ -30,7 +30,10 @@
         },
       ]"
     >
-      <el-input v-model="localStudent.email" :placeholder="t('student.email')" />
+      <el-input
+        v-model="localStudent.email"
+        :placeholder="t('student.email')"
+      />
     </el-form-item>
 
     <!-- Điện thoại -->
@@ -42,13 +45,24 @@
           message: t('common.required'),
           trigger: 'blur',
         },
+        {
+          pattern: /^[0-9]{10}$/,
+          message: t('student.phoneInvalid'),
+          trigger: 'blur',
+        },
       ]"
     >
-      <el-input v-model="localStudent.phone" :placeholder="t('student.phone')" />
+      <el-input
+        v-model="localStudent.phone"
+        :placeholder="t('student.phone')"
+      />
     </el-form-item>
 
     <!-- Avatar hiện tại: gallery với nút xóa/khôi phục -->
-    <el-form-item :label="t('student.avatar')" v-if="existingAvatars.length > 0">
+    <el-form-item
+      :label="t('student.avatar')"
+      v-if="existingAvatars.length > 0"
+    >
       <div style="display: flex; gap: 12px; flex-wrap: wrap">
         <div
           v-for="avatar in existingAvatars"
@@ -99,7 +113,7 @@
               font-size: 12px;
             "
           >
-            {{ t('common.deleteConfirm') }}
+            {{ t("common.deleteConfirm") }}
           </span>
         </div>
       </div>
@@ -123,7 +137,7 @@
         />
       </el-upload>
       <p style="color: #999; font-size: 12px; margin-top: 8px">
-        {{ t('student.avatar') }}
+        {{ t("student.avatar") }}
       </p>
     </el-form-item>
 
@@ -143,9 +157,9 @@
     <!-- Submit -->
     <el-form-item v-if="!props.isRead">
       <el-button type="primary" @click="submitForm" :loading="loading">
-        {{ t('common.save') }}
+        {{ t("common.save") }}
       </el-button>
-      <el-button @click="cancelEdit">{{ t('common.cancel') }}</el-button>
+      <el-button @click="cancelEdit">{{ t("common.cancel") }}</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -175,7 +189,10 @@ const defaultStudent = () => ({
   avatar: [],
 });
 
-const localStudent = ref({ ...(props.student || defaultStudent()), avatarFile: null });
+const localStudent = ref({
+  ...(props.student || defaultStudent()),
+  avatarFile: null,
+});
 const existingAvatars = ref(props.student?.avatar || []);
 const deletedAvatarIds = ref([]);
 const newAvatarPreview = ref("");
@@ -240,11 +257,16 @@ const toggleDeleteAvatar = (id) => {
 
 const submitForm = () => {
   if (!localStudent.value.name || !localStudent.value.name.trim()) {
-    ElMessage.error(t('student.nameRequired'));
+    ElMessage.error(t("student.nameRequired"));
     return;
   }
   if (!localStudent.value.email || !localStudent.value.email.trim()) {
-    ElMessage.error(t('student.emailRequired'));
+    ElMessage.error(t("student.emailRequired"));
+    return;
+  }
+
+  if (!localStudent.value.phone || !localStudent.value.phone.trim()) {
+    ElMessage.error(t("student.phoneInvalid"));
     return;
   }
 
@@ -257,7 +279,6 @@ const submitForm = () => {
 
 const cancelEdit = () => emit("cancel");
 </script>
-
 
 <style scoped>
 /* Highlight avatar bị đánh dấu xóa */

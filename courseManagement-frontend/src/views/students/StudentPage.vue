@@ -40,7 +40,7 @@
       <div class="action-toolbar" v-if="!courseId">
         <el-button type="primary" @click="createStudent" class="action-button">
           <span class="button-icon">➕</span>
-          {{ $t('student.addNew') }}
+          {{ $t("student.addNew") }}
         </el-button>
         <el-button
           type="success"
@@ -49,7 +49,7 @@
           class="action-button"
         >
           <span class="button-icon" v-if="!exporting">📥</span>
-          {{ $t('student.exportExcel') }}
+          {{ $t("student.exportExcel") }}
         </el-button>
       </div>
 
@@ -57,7 +57,7 @@
       <div class="action-toolbar" v-else>
         <el-button @click="goBackToCourses" class="action-button">
           <span class="button-icon">⬅️</span>
-          {{ $t('course.title') }}
+          {{ $t("course.title") }}
         </el-button>
       </div>
 
@@ -107,7 +107,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import StudentTable from "@/components/studentsComponent/StudentTable.vue";
 import StudentForm from "@/components/studentsComponent/StudentForm.vue";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElLoading } from "element-plus";
 import {
   getAllStudent,
   createStudent as apiCreateStudent,
@@ -130,20 +130,20 @@ const courseId = computed(() => {
 
 // Dynamic page title
 const pageTitle = computed(() => {
-  return courseId.value ? t('student.title') + ' - ' + t('course.title') : t('student.title');
+  return courseId.value
+    ? t("student.title") + " - " + t("course.title")
+    : t("student.title");
 });
 
 const pageSubtitle = computed(() => {
-  return courseId.value
-    ? t('student.subtitle')
-    : t('student.subtitle');
+  return courseId.value ? t("student.subtitle") : t("student.subtitle");
 });
 
 const dialogVisible = ref(false);
 const selectedStudent = ref(null);
 const isEdit = ref(false);
 const isRead = ref(false);
-const dialogTitle = ref(t('student.addNew'));
+const dialogTitle = ref(t("student.addNew"));
 
 const formErrors = ref([]); // state để lưu lỗi hiển thị trong form
 
@@ -171,11 +171,11 @@ const studentListRef = ref(null);
 
 // Columns configuration
 const columns = ref([
-  { prop: "name", label: t('student.name') },
-  { prop: "email", label: t('student.email') },
-  { prop: "phone", label: t('student.phone') },
-  { prop: "gender", label: t('student.gender'), width: "100" },
-  { prop: "status", label: t('common.status') || "Status", width: "120" },
+  { prop: "name", label: t("student.name") },
+  { prop: "email", label: t("student.email"), width: "200" },
+  { prop: "phone", label: t("student.phone") },
+  { prop: "gender", label: t("student.gender"), width: "100" },
+  { prop: "status", label: t("common.status") || "Status", width: "120" },
 ]);
 
 // Load students function - phân biệt theo courseId
@@ -201,7 +201,7 @@ const loadStudents = async () => {
     console.error(err);
     students.value = [];
     totalElements.value = 0;
-    ElMessage.error(t('common.error'));
+    ElMessage.error(t("common.error"));
   }
 };
 
@@ -226,10 +226,10 @@ const handleExport = async () => {
     link.click();
     link.remove();
     window.URL.revokeObjectURL(url);
-    ElMessage.success(t('common.success'));
+    ElMessage.success(t("common.success"));
   } catch (err) {
     console.error(err);
-    ElMessage.error(t('common.error'));
+    ElMessage.error(t("common.error"));
   } finally {
     exporting.value = false;
   }
@@ -257,19 +257,19 @@ const createStudent = () => {
   formErrors.value = [];
   selectedStudent.value = null;
   isEdit.value = false;
-  dialogTitle.value = t('student.addNew');
+  dialogTitle.value = t("student.addNew");
   dialogVisible.value = true;
 };
 
 const editStudent = (student) => {
   if (courseId.value) {
-    ElMessage.warning(t('common.error'));
+    ElMessage.warning(t("common.error"));
     return;
   }
   formErrors.value = [];
   selectedStudent.value = { ...student };
   isEdit.value = true;
-  dialogTitle.value = t('student.update');
+  dialogTitle.value = t("student.update");
   dialogVisible.value = true;
 };
 
@@ -279,7 +279,7 @@ const viewStudentDetail = (student) => {
   isEdit.value = false;
   isRead.value = true;
   nextTick(() => {
-    dialogTitle.value = t('student.profile');
+    dialogTitle.value = t("student.profile");
     dialogVisible.value = true;
   });
 };
@@ -290,6 +290,11 @@ const goBackToCourses = () => {
 
 const saveStudent = async ({ student, avatarFile, deleteAvatarIds }) => {
   formErrors.value = [];
+  const loading = ElLoading.service({
+    fullscreen: true,
+    text: t("common.saving") || "Đang lưu...",
+  });
+
   try {
     const formData = new FormData();
     formData.append("name", student.name);
@@ -309,10 +314,10 @@ const saveStudent = async ({ student, avatarFile, deleteAvatarIds }) => {
 
     if (student.id) {
       await apiUpdateStudent(student.id, formData);
-      ElMessage.success(t('student.updateSuccess'));
+      ElMessage.success(t("student.updateSuccess"));
     } else {
       await apiCreateStudent(formData);
-      ElMessage.success(t('student.createSuccess'));
+      ElMessage.success(t("student.createSuccess"));
     }
 
     dialogVisible.value = false;
@@ -328,11 +333,13 @@ const saveStudent = async ({ student, avatarFile, deleteAvatarIds }) => {
       } else if (typeof errorMessages === "string") {
         ElMessage.error(errorMessages);
       } else {
-        ElMessage.error(t('student.saveFailed'));
+        ElMessage.error(t("student.saveFailed"));
       }
     } else {
-      ElMessage.error(t('student.saveFailed'));
+      ElMessage.error(t("student.saveFailed"));
     }
+  } finally {
+    loading.close();
   }
 };
 

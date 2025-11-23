@@ -18,7 +18,8 @@
     "action": "Action",
     "none": "No data",
     "required": "This field is required",
-    "stt": "st"
+    "stt": "st",
+    "saving": "Saving..."
   },
   "student": {
     "title": "Student Management",
@@ -63,7 +64,8 @@
     "saveFailed": "Save failed!",
     "deleteFailed": "Delete failed!",
     "nameRequired": "Course name is required",
-    "exportExcel": "Export Excel"
+    "exportExcel": "Export Excel",
+    "phoneInvalid": "phone number invalid"
   },
   "lesson": {
     "title": "Lesson Management",
@@ -89,7 +91,11 @@
     "noThumbnail" : "No thumnail",
     "viewVideo": "viewVideo",
     "canChangeCourse": "can Change Course",
-    "addingToCourse": "adding to course"
+    "addingToCourse": "adding to course",
+    "titlePlaceholder": "title PlaceHolder",
+    "dropVideo": "drop video",
+    "restore": "ready delete",
+    "delete": "delete"
   },
   "enrollment": {
     "title": "Enrollment Management",

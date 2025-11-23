@@ -32,24 +32,26 @@
 
       <!-- Video preview -->
       <el-table-column :label="t('lesson.video')" width="180">
-        <template #default="{ row }">
-          <div v-if="row.videos?.length > 0">
-            <a
-              :href="row.videos[0].url"
-              target="_blank"
-              style="color: #409eff; text-decoration: underline; font-size: 12px;"
-            >
-              {{ row.videos[0].fileName || t('lesson.viewVideo') }}
-            </a>
-            <span
-              v-if="row.videos.length > 1"
-              style="color: #999; font-size: 11px"
-              >(+{{ row.videos.length - 1 }})</span
-            >
-          </div>
-          <span v-else style="color: #ccc">{{ t('lesson.noVideo') }}</span>
-        </template>
-      </el-table-column>
+  <template #default="{ row }">
+    <div v-if="row.videos?.length > 0">
+      <div v-for="(video, index) in row.videos" :key="index">
+        <a
+          :href="video.url"
+          target="_blank"
+          style="color: #409eff; text-decoration: underline; font-size: 12px;"
+        >
+          {{ video.fileName || t('lesson.viewVideo') }}
+        </a>
+        <span
+          v-if="index < row.videos.length - 1"
+          style="color: #999; font-size: 11px"
+          >,</span
+        >
+      </div>
+    </div>
+    <span v-else style="color: #ccc">{{ t('lesson.noVideo') }}</span>
+  </template>
+</el-table-column>
 
       <!-- Thumbnail preview -->
       <el-table-column :label="t('lesson.thumbnail')" width="180">

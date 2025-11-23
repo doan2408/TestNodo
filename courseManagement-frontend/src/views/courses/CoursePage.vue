@@ -85,7 +85,7 @@ import { ref, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import CourseTable from "@/components/coursesComponent/CourseList.vue";
 import CourseForm from "@/components/coursesComponent/CourseForm.vue";
-import { ElMessage } from "element-plus";
+import { ElLoading, ElMessage } from "element-plus";
 import {
   getAllCourses,
   createCourse as apiCreateCourse,
@@ -227,6 +227,10 @@ const viewStudents = (courseId) => {
 // Lưu dữ liệu
 const saveCourse = async ({ course, thumbnailFile, deleteThumbnailIds }) => {
   formErrors.value = [];
+  const loading = ElLoading.service({
+    fullscreen: true,
+    text: t("common.saving") || "Đang lưu...",
+  });
   try {
     const formData = new FormData();
     formData.append("name", course.name);
@@ -276,6 +280,9 @@ const saveCourse = async ({ course, thumbnailFile, deleteThumbnailIds }) => {
     } else {
       ElMessage.error(t("common.saveFailed"));
     }
+  }
+  finally {
+    loading.close();
   }
 };
 

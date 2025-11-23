@@ -96,7 +96,7 @@ import { ref, nextTick, onMounted } from "vue";
 import StudentTable from "@/components/studentsComponent/StudentTable.vue";
 import EnrollmentForm from "@/components/enrollmentComponent/EnrollmentForm.vue";
 import EnrollmentDeleteModal from "@/components/enrollmentComponent/ModalDelete.vue";
-import { ElMessage } from "element-plus";
+import { ElLoading, ElMessage } from "element-plus";
 import {
   getAllStudent,
   deleteStudent as apiDeleteStudent,
@@ -150,7 +150,7 @@ const studentSelect = ref([]);
 // Columns configuration
 const columns = ref([
   { prop: "name", label: "Name" },
-  { prop: "email", label: "Email" },
+  { prop: "email", label: "Email", width: "180" },
   { prop: "phone", label: "Phone" },
   { prop: "gender", label: "Gender", width: "100" },
   { prop: "status", label: "Status", width: "120" },
@@ -274,7 +274,10 @@ const editStudentEnrollment = async (student) => {
 const saveEnrollment = async (courseIds) => {
   if (!selectedStudent.value) return;
 
-  enrollmentLoading.value = true;
+  const loading = ElLoading.service({
+    fullscreen: true,
+    text: t("common.saving") || "Đang lưu...",
+  });
   try {
     await updateEnrollment({
       studentId: selectedStudent.value.id,
@@ -288,7 +291,7 @@ const saveEnrollment = async (courseIds) => {
       error.response?.data?.message || t('enrollment.saveFailed');
     ElMessage.error(errorMessage);
   } finally {
-    enrollmentLoading.value = false;
+    loading.close();
   }
 };
 

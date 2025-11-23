@@ -54,7 +54,7 @@ import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import LessonList from "@/components/lessonsComponent/LessonList.vue";
 import LessonForm from "@/components/lessonsComponent/LessonForm.vue";
-import { ElMessage, ElMessageBox } from "element-plus";
+import { ElMessage, ElMessageBox, ElLoading } from "element-plus";
 import {
   createLesson as apiCreateLesson,
   updateLesson as apiUpdateLesson,
@@ -125,6 +125,12 @@ const editLesson = (lesson) => {
 // Save lesson (create or update)
 const saveLesson = async ({ lesson, videoFile, thumbnailFile, deleteVideoIds, deleteThumbnailIds }) => {
   formErrors.value = [];
+
+  const loading = ElLoading.service({
+    fullscreen: true,
+    text: t("common.saving") || "Đang lưu...",
+  });
+
   try {
     const formData = new FormData();
     formData.append("courseId", lesson.courseId);
@@ -164,6 +170,9 @@ const saveLesson = async ({ lesson, videoFile, thumbnailFile, deleteVideoIds, de
       formErrors.value = [errorMessages || t("lesson.saveFailed")];
       ElMessage.error(errorMessages || t("lesson.saveFailed"));
     }
+  }
+  finally {
+    loading.close();
   }
 };
 
